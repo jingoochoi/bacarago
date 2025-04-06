@@ -5,6 +5,7 @@ import time
 import requests
 from io import BytesIO
 from PIL import Image,ImageTk
+from tkinter import messagebox as mbox
 window=tk.Tk()
 window.title('bacarat game')
 window.geometry('600x600')
@@ -21,10 +22,10 @@ deck.shuffle()
 pnum=0
 bnum=0
 step=1
-lab1=tk.Label(text=f'player({pnum})',font=('arial',14,'bold'),width=20)
-lab1.grid(row=0,column=0,columnspan=3,padx=10,pady=10,sticky='we')
-lab2=tk.Label(text=f'banker({bnum})',font=('arial',14,'bold'),width=20)
-lab2.grid(row=0,column=3,columnspan=3,padx=10,pady=10,sticky='we')
+lab1=tk.Label(text=f'player({pnum})',font=('arial',14,'bold'),width=24,bg='blue')
+lab1.grid(row=0,column=0,columnspan=3,sticky='we')
+lab2=tk.Label(text=f'banker({bnum})',font=('arial',14,'bold'),width=24,bg='red')
+lab2.grid(row=0,column=3,columnspan=3,sticky='we')
 car1=tk.Label()
 car1.grid(row=1,column=0)
 car3=tk.Label()
@@ -45,13 +46,20 @@ card_labels = {
     5: car5,
     6: car6,
 }
+def result():
+    if pnum>bnum:mbox.showinfo('result','player win')
+    elif pnum<bnum:mbox.showinfo('result','banker win')
+    else:mbox.showinfo('result','tie')
 def game():
     global pnum, bnum, step
     if step==5:
         if pnum==8 or pnum==9 or bnum==8 or bnum==9:
             update_labels()
+            result()
             return
-    if step > 6:return
+    if step > 6:
+        result()
+        return
     draw=random.sample(list(deck),1)[0]
     deck.remove(draw)
     rank_name = draw.face.name
@@ -76,7 +84,7 @@ def game():
     suit_map = {'HEARTS': 'H', 'DIAMONDS': 'D', 'CLUBS': 'C', 'SPADES': 'S'}
     suit=suit_map[draw.suit.name]
     img_url = f"https://deckofcardsapi.com/static/img/{rank}{suit}.png"
-    print(f'{rank}{suit}')
+    # print(f'{rank}{suit}')
     response=requests.get(img_url)
     data=response.content
     img=Image.open(BytesIO(data))
